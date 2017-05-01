@@ -27,16 +27,16 @@ public class ComentDao {
         java.text.SimpleDateFormat sdf =
                 new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        params.addValue("idcomment", coment.getId());
+        params.addValue("id", coment.getId());
         params.addValue("coment", coment.getComent());
         params.addValue("created", sdf.format(coment.getCreatedDate()));
         params.addValue("changed", sdf.format(coment.getChangedDate()));
         params.addValue("likes", coment.getLikes());
         params.addValue("dislikes", coment.getDislikes());
         params.addValue("image_id", coment.getImage().getId());
-        params.addValue("user_idr", coment.getUser().getId());
+        params.addValue("user_id", coment.getUser().getId());
 
-        return jdbc.update("insert into coments (id, coment, created, changed, likes, dislikes, image_id, user_id) values (NULL, :text, :created, :changed, :likes, :dislikes, :image_id, :user_id)", params) == 1;
+        return jdbc.update("insert into coments (id, coment, created, changed, likes, dislikes, image_id, user_id) values (:id, :coment, :created, :changed, :likes, :dislikes, :image_id, :user_id)", params) == 1;
     }
 
     public List<Coment> getAllComments() {
@@ -67,6 +67,10 @@ public class ComentDao {
         return jdbc.queryForObject("select dislikes from comment where id = :id", params, Integer.class);
     }
 
+    public void deleteComents() {
+
+        jdbc.getJdbcOperations().execute("DELETE  FROM coments");
+    }
 
     public boolean updateComent(int id, String text) {
         MapSqlParameterSource params = new MapSqlParameterSource();

@@ -26,22 +26,22 @@ public class MyTagDao {
 
 
 
-        return jdbc.update("insert into mytag (id, value) values ( :id, :value)", params) == 1;
+        return jdbc.update("insert into tags (id, value) values ( :id, :value)", params) == 1;
     }
-
+    public void deleteTags() {
+        jdbc.getJdbcOperations().execute("DELETE  FROM tags");
+        jdbc.getJdbcOperations().execute(" DELETE FROM image_tags");
+    }
     public boolean exists(String value) {
         return jdbc.queryForObject("select count(*) from mytag where value=:value",
                 new MapSqlParameterSource("value", value), Integer.class) > 0;
     }
 
     public List<MyTag> getAllTags() {
-        return jdbc.query("select * from mytag", BeanPropertyRowMapper.newInstance(MyTag.class));
+        return jdbc.query("select * from tags", BeanPropertyRowMapper.newInstance(MyTag.class));
     }
-    public List<MyTag> getAllTagsofIMG(int id) {
-        return jdbc.query("select mytag.* from tags,image_tags WHERE image_tags.tag_id= tags.id AND image_tags.image_id="+id, BeanPropertyRowMapper.newInstance(MyTag.class));
+    public List<MyTag> getAllTagsofIMG(Image i) {
+        return jdbc.query("select tags.* from tags,image_tags WHERE image_tags.tag_id= tags.id AND image_tags.image_id="+i.getId(), BeanPropertyRowMapper.newInstance(MyTag.class));
     }
-    public void deleteTags() {
-        jdbc.getJdbcOperations().execute("DELETE FROM mytag");
 
-    }
 }

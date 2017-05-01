@@ -50,6 +50,11 @@ public class User {
         this.name = name;
         this.registrationDate = registrationDate;
     }
+    public User( String name) {
+
+        this.name = name;
+
+    }
 
     public int getId() {
         return id;

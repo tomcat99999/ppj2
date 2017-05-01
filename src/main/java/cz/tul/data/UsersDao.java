@@ -21,11 +21,11 @@ public class UsersDao {
 
         params.addValue("name", user.getName());
         params.addValue("id", user.getId());
-        params.addValue("registrationDate", new Date());
+        params.addValue("created", new Date());
 
 
 
-        return jdbc.update("insert into users (name, id, registrationDate) values (:name, :id, :registrationDate)", params) == 1;
+        return jdbc.update("insert into users (name, id, registration) values (:name, :id, :created)", params) == 1;
     }
 
     public boolean exists(String name) {
@@ -47,6 +47,6 @@ public class UsersDao {
 
     public void deleteUsers() {
 
-        jdbc.getJdbcOperations().execute("DELETE FROM USERS");
+        jdbc.getJdbcOperations().execute("DELETE  FROM USERS");
     }
 }

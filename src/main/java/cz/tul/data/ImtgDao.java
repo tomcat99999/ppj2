@@ -46,4 +46,5 @@ public class ImtgDao {
         jdbc.getJdbcOperations().execute("DELETE FROM imtg");
 
     }
+
 }

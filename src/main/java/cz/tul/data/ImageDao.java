@@ -35,19 +35,23 @@ public class ImageDao {
         params.addValue("dislikes", image.getDislikes());
         params.addValue("user_id", image.getUser().getId());
 
-        return jdbc.update("insert into image (id, location, name, changed, created, likes, dislikes, user_id) values (:id, :location, :name, :created, :changed, :likes, :dislikes, :user_id)", params) == 1;
+        return jdbc.update("insert into images (id, location, name, changed, created, likes, dislikes, user_id) values (:id, :location, :name, :created, :changed, :likes, :dislikes, :user_id)", params) == 1;
     }
 
     public List<Image> getAllImages() {
         return jdbc.query("select * from image", BeanPropertyRowMapper.newInstance(Image.class));
     }
 
-    public List<Image> getImageName(String name) {
+    public List<Image> getImageByName(String name) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", name);
         return jdbc.query("select * from image WHERE name = :name", params, BeanPropertyRowMapper.newInstance(Image.class));
     }
-
+    public List<Image> getImageByTag(MyTag t) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", t.getId());
+        return jdbc.query("select images.* from images,image_tags WHERE images.id=image_tags.image_id AND image_tags.tag_id = :id", params, BeanPropertyRowMapper.newInstance(Image.class));
+    }
     public boolean exists(String name) {
         return jdbc.queryForObject("select count(*) from image where name=:name",
                 new MapSqlParameterSource("name", name), Integer.class) > 0;
@@ -58,19 +62,19 @@ public class ImageDao {
         return jdbc.update("UPDATE `image` SET likes = likes + 1 WHERE `id` = " + id, param) == 1;
     }
 
-    public boolean dislajk(int id) {
+    public boolean dislike(int id) {
         MapSqlParameterSource par = new MapSqlParameterSource();
         return jdbc.update("UPDATE `image` SET dislikes = dislikes + 1 WHERE `id` = " + id, par) == 1;
     }
 
-    public int getLajks(int id) {
+    public int getLikes(int id) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("id", id);
 
         return jdbc.queryForObject("select likes from image where id = :id", params, Integer.class);
     }
 
-    public int getDislajks(int id) {
+    public int getDislikes(int id) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("id", id);
 
@@ -124,5 +128,21 @@ public class ImageDao {
 
         return jdbc.queryForObject("select changed from image where id = :id", params, String.class);
     }
+
+    public void deleteImages() {
+
+        jdbc.getJdbcOperations().execute("DELETE  FROM images");
+    }
+    public boolean addTag(int idimg,int idtag){
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("image_tags", idimg);
+        params.addValue("tag_id", idtag);
+
+        return jdbc.update("insert into image_tags (image_id,tag_id) values (:image_tags,:tag_id)", params) == 1;
+
+    }
+
+
+
 }
 

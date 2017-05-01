@@ -56,16 +56,18 @@ public class Coment {
         this.coment = coment;
         this.user = user;
         this.createdDate = new Date();
+        this.changedDate = new Date();
         this.likes = 0;
         this.dislikes = 0;
         this.image = image;
+        image.getCommentSet().add(this);
     }
 
-    public Coment(int id, String coment, User user) {
+   /* public Coment(int id, String coment, User user) {
         this.id = id;
         this.coment = coment;
         this.user = user;
-    }
+    }*/
 
 
     public void setComent(String comment) {

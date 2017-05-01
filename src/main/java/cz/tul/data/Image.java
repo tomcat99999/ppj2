@@ -73,7 +73,7 @@ public class Image {
         this.name = name;
     }
 
-    public Image(int id, String name, String Location, User user, Set<Coment> commentSet, Set<MyTag> tagSet ) {
+    public Image(int id, String name, String Location, User user) {
         this.id = id;
         this.name = name;
         this.Location = Location;
@@ -83,6 +83,7 @@ public class Image {
         this.likes = 0;
         this.dislikes = 0;
         this.createdDate = new Date();
+        this.changedDate = new Date();
     }
 
 
