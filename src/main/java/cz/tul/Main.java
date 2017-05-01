@@ -4,7 +4,6 @@ import cz.tul.data.ComentDao;
 import cz.tul.data.ImageDao;
 import cz.tul.data.MyTagDao;
 import cz.tul.data.UsersDao;
-import cz.tul.provisioning.Provisioner;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +13,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import java.util.Arrays;
-
 @SpringBootApplication
+@EnableTransactionManagement
 @EntityScan("cz.tul.data")
 public class Main {
 
@@ -44,6 +45,7 @@ public class Main {
         return new ComentDao();
     }
 
+
     @Autowired
     EntityManagerFactory entityManagerFactory;
 
@@ -52,12 +54,10 @@ public class Main {
         return entityManagerFactory.unwrap(SessionFactory.class);
     }
 
-    @Profile({"devel", "test"})
-    @Bean(initMethod = "doProvision")
-    public Provisioner provisioner() {
-        return new Provisioner();
+    @Bean
+    public PlatformTransactionManager txManager() {
+        return new HibernateTransactionManager(entityManagerFactory.unwrap(SessionFactory.class));
     }
-
 
     private static final Logger log = LoggerFactory.getLogger(Main.class);
 

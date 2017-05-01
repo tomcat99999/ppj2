@@ -40,7 +40,7 @@ public class Coment {
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "image_id")
 
     private Image image;
 

@@ -14,6 +14,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.Date;
 import java.util.List;
 
@@ -105,18 +107,24 @@ public class ComentDao {
        // jdbc.getJdbcOperations().execute("DELETE  FROM coments");
     }
 
-    public boolean updateComent(int id, String text) {
+    public void updateComent(int id, String text) {
         MapSqlParameterSource params = new MapSqlParameterSource();
 
-        java.text.SimpleDateFormat sdf =
-                new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      //  java.text.SimpleDateFormat sdf =  new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date d= new Date();
+        Criteria criteria = session().createCriteria(Coment.class);
+        criteria.add(Restrictions.eq("id", id));
+        Coment i=(Coment) criteria.uniqueResult();
+        i.setChangedDate(d);
+        i.setComent(text);
 
-        params.addValue("coment", text);
+        session().update(i);
+      /*  params.addValue("coment", text);
 
         params.addValue("changed", sdf.format(new Date()));
         params.addValue("id", id);
         return jdbc.update("UPDATE `comment` SET text = :coment, changed = :changed " +
-                "WHERE `id` = :id", params) == 1;
+                "WHERE `id` = :id", params) == 1;*/
+
     }
 }
