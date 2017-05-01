@@ -14,7 +14,7 @@ import java.util.Date;
 public class Coment {
     @Id
     @org.springframework.data.annotation.Id
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(name="id")
     private int id;
 
     @Column(name = "coment")
@@ -40,7 +40,7 @@ public class Coment {
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "name_id")
+    @JoinColumn(name = "user_id")
 
     private Image image;
 

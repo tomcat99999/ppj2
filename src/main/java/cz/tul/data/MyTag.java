@@ -16,13 +16,13 @@ public class MyTag {
 
     @Id
     @org.springframework.data.annotation.Id
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(name="id")
     private int id;
 
     @Column(name = "value", unique=true)
     private String value;
 
-    @ManyToMany(mappedBy = "tagSet")
+    @ManyToMany(mappedBy = "image_tags")
     private Set<Image> imageSet = new HashSet<>();
 
     public MyTag() {

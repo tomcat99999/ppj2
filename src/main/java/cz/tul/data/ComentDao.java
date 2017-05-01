@@ -4,6 +4,10 @@ package cz.tul.data;
  * Created by The CAT
  */
 
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -18,11 +22,14 @@ public class ComentDao {
 
     @Autowired
     private NamedParameterJdbcOperations jdbc;
+    @Autowired
+    private SessionFactory sessionFactory;
 
+    public Session session() { return sessionFactory.getCurrentSession();}
     @Transactional
-    public boolean create(Coment coment) {
-
-        MapSqlParameterSource params = new MapSqlParameterSource();
+    public void create(Coment coment) {
+        session().save(coment);
+       /* MapSqlParameterSource params = new MapSqlParameterSource();
 
         java.text.SimpleDateFormat sdf =
                 new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -36,40 +43,66 @@ public class ComentDao {
         params.addValue("image_id", coment.getImage().getId());
         params.addValue("user_id", coment.getUser().getId());
 
-        return jdbc.update("insert into coments (id, coment, created, changed, likes, dislikes, image_id, user_id) values (:id, :coment, :created, :changed, :likes, :dislikes, :image_id, :user_id)", params) == 1;
+      return jdbc.update("insert into coments (id, coment, created, changed, likes, dislikes, image_id, user_id) values (:id, :coment, :created, :changed, :likes, :dislikes, :image_id, :user_id)", params) == 1;
+   */
     }
 
     public List<Coment> getAllComments() {
-        return jdbc.query("select * from comment", BeanPropertyRowMapper.newInstance(Coment.class));
+
+        Criteria criteria = session().createCriteria(Image.class);
+        return criteria.list();
+       // return jdbc.query("select * from comment", BeanPropertyRowMapper.newInstance(Coment.class));
     }
 
-    public boolean likeComent(int id) {
+    public void dislikeComent(int id) {
+
+        Criteria crit = session().createCriteria(Coment.class);
+        crit.add(Restrictions.eq("id", id));
+        Coment i=(Coment) crit.uniqueResult();
+        i.setLikes(i.getLikes()+1);
+        session().update(i);/*
         MapSqlParameterSource param = new MapSqlParameterSource();
-        return jdbc.update("UPDATE `comment` SET likes = likes + 1 WHERE `id` = " + id, param) == 1;
+        return jdbc.update("UPDATE `comment` SET likes = likes + 1 WHERE `id` = " + id, param) == 1;*/
     }
 
-    public boolean like(int id) {
+    public void likeComent(int id) {
+        Criteria crit = session().createCriteria(Coment.class);
+        crit.add(Restrictions.eq("id", id));
+        Coment i=(Coment) crit.uniqueResult();
+        i.setLikes(i.getLikes()+1);
+        session().update(i);
+        /*
         MapSqlParameterSource par = new MapSqlParameterSource();
         return jdbc.update("UPDATE `comment` SET dislikes = dislikes + 1 WHERE `idcomment` = " + id, par) == 1;
+        */
     }
 
     public int getLikes(int id) {
-        MapSqlParameterSource params = new MapSqlParameterSource();
+        Criteria criteria = session().createCriteria(Coment.class);
+        criteria.add(Restrictions.eq("id", id));
+        Coment i=(Coment) criteria.uniqueResult();
+        return i.getLikes();
+     /*   MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("id", id);
 
-        return jdbc.queryForObject("select likes from comment where id = :id", params, Integer.class);
+        return jdbc.queryForObject("select likes from comment where id = :id", params, Integer.class);*/
     }
 
     public int getDislike(int id) {
-        MapSqlParameterSource params = new MapSqlParameterSource();
+       /* MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("idcomment", id);
 
-        return jdbc.queryForObject("select dislikes from comment where id = :id", params, Integer.class);
+        return jdbc.queryForObject("select dislikes from comment where id = :id", params, Integer.class);*/
+
+        Criteria criteria = session().createCriteria(Coment.class);
+        criteria.add(Restrictions.eq("id", id));
+        Coment i=(Coment) criteria.uniqueResult();
+        return i.getDislikes();
     }
 
     public void deleteComents() {
-
-        jdbc.getJdbcOperations().execute("DELETE  FROM coments");
+        session().createQuery("delete from coments").executeUpdate();
+       // jdbc.getJdbcOperations().execute("DELETE  FROM coments");
     }
 
     public boolean updateComent(int id, String text) {
